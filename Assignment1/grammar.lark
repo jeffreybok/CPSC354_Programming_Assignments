@@ -1,0 +1,24 @@
+?start: exp
+
+?exp: add_exp
+
+?add_exp: mul_exp
+        | add_exp "+" mul_exp -> add
+        | add_exp "-" mul_exp -> sub
+
+?mul_exp: unary_exp
+        | mul_exp "*" unary_exp -> mul
+
+?unary_exp: pow_exp
+          | "-" unary_exp -> neg
+
+?pow_exp: atom
+        | atom "^" pow_exp -> pow
+
+?atom: NUMBER -> number
+     | "(" exp ")"
+     | "log" pow_exp "base" pow_exp -> log
+
+%import common.NUMBER
+%import common.WS
+%ignore WS
