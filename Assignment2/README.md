@@ -2,7 +2,7 @@ Normalizing Lambda Calculus Interpreter
 Student Name: Jeffrey Bok
 Student ID: 2428659
 Student Email: bok@chapman.edu
-Course Section: CPSC-354
+Course Section: CPSC-354-01
 Assignment: Programming Assignment 2: Normalizing Interpreter
 
 ## How to compile and run code:
