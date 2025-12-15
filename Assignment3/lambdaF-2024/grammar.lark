@@ -1,0 +1,60 @@
+?start: prog
+
+// Sequencing has lowest precedence (top-level only)
+?prog: prog ";;" exp                            -> seq
+     | exp
+
+// Lambda, if, let, letrec have low precedence
+?exp: "\\" NAME "." exp                         -> lam
+    | "if" exp "then" exp "else" exp            -> if_exp
+    | "let" NAME "=" exp "in" exp               -> let_exp
+    | "letrec" NAME "=" exp "in" exp            -> letrec_exp
+    | "fix" exp                                 -> fix_exp
+    | cmp_exp
+
+// Comparison operators
+?cmp_exp: add_exp "<=" add_exp      -> leq
+        | add_exp "==" add_exp      -> eq
+        | add_exp "=" add_exp       -> eq
+        | add_exp
+
+// Addition and subtraction (left-associative)
+?add_exp: add_exp "+" mul_exp       -> plus
+        | add_exp "-" mul_exp       -> minus
+        | mul_exp
+
+// Multiplication (left-associative, higher precedence than +/-)
+?mul_exp: mul_exp "*" neg_exp       -> times
+        | neg_exp
+
+// Unary negation
+?neg_exp: "-" neg_exp               -> neg
+        | app_exp
+
+// Application (left-associative)
+?app_exp: app_exp cons_exp          -> app
+        | cons_exp
+
+// Cons operator (right-associative, for building lists) - binds tighter than app
+?cons_exp: hdtl_exp ":" cons_exp    -> cons
+         | hdtl_exp
+
+// Head and tail
+?hdtl_exp: "hd" cons_exp            -> hd
+         | "tl" cons_exp            -> tl
+         | atom
+
+// Atoms: variables, numbers, empty list, and parenthesized expressions
+?atom: NAME                         -> var
+     | NUMBER                       -> num
+     | "#"                          -> empty_list
+     | "(" prog ")"
+
+NAME: /[a-z_][a-zA-Z0-9_]*/         
+%import common.NUMBER
+
+%import common.WS
+%ignore WS
+
+%ignore /\/\/[^\n]*/  
+%ignore /\/\*[\s\S]*?\*\//
